@@ -3,20 +3,20 @@ from maps import *
 
 pygame.init()
 
-win_w = 800
-win_h = 800
+win_w = 600
+win_h = 500
 FPS = 40
 
 
 spring = pygame.transform.scale(pygame.image.load("background2.png"), (win_w, win_h))
 
-block_size = 40
+block_size = 20
 
 
 
 
 class GameSprite:
-    def init(self, x, y, w, h, image):
+    def __init__(self, x, y, w, h, image):
         self.rect = pygame.Rect(x, y, w, h)
         image = pygame.transform.scale(image, (w, h))
         self.image = image
@@ -26,8 +26,8 @@ class GameSprite:
 
 
 class Pers(GameSprite):
-    def init(self, x, y, w, h, image, speed):
-        super().init(x, y, w, h, image)
+    def __init__(self, x, y, w, h, image, speed):
+        super().__init__(x, y, w, h, image)
         self.speed = speed
 
     def move(self, key_left, key_right, key_up, key_down):
@@ -46,7 +46,7 @@ class Pers(GameSprite):
                 self.rect.y += self.speed
         
 class Button:
-    def init(self, x, y, w, h, image1, image2):
+    def __init__(self, x, y, w, h, image1, image2):
         self.rect = pygame.Rect(x, y, w, h)
         self.image1 = pygame.transform.scale(image1, (w, h))
         self.image2 = pygame.transform.scale(image2, (w, h))
@@ -61,6 +61,14 @@ class Button:
             self.image = self.image2
         else:
             self.image = self.image1
+
+
+
+
+class Enemy(GameSprite):
+    def __init__(self, x, y, w, h, image, speed):
+        super().__init__(x, y, w, h, image)
+        self.speed = speed
 
 
 
@@ -85,14 +93,17 @@ background = pygame.transform.scale(background, (win_w, win_h))
 window.blit(background, (0, 0))
 
 pers_img = pygame.image.load("luntic.png")
-pers = Pers(-6, 750, 45, 45, pers_img, 5)
+pers = Pers(-6, 450, 45, 45, pers_img, 5)
 
 gold_img = pygame.image.load("treasure.png")
 gold = GameSprite(win_w - 60, win_h - 60, 50, 50, gold_img)
 
-enemy_img = pygame.image.load("enemi_right.png")
+enemy_img = pygame.image.load("enemi_le.png")
+enemy  = Enemy(50, 200, 35, 35, enemy_img, 0)
+enemy_img2 = pygame.image.load("enemy_le2.png")
+enemy2  = Enemy(200, 200, 35, 35, enemy_img2, 0)
 
-
+enemys = [enemy, enemy2]
 
 play_img = pygame.image.load("Play.png")
 quit_img = pygame.image.load("Quit.png")
@@ -136,7 +147,8 @@ while game:
 
     if not finish:
         window.blit(background, (0, 0))
-        
+        enemy.update()
+        enemy2.update()
         pers.move(pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s)
         pers.update()
         gold.update()
@@ -144,6 +156,12 @@ while game:
             block.update()
             if pers.rect.colliderect(block.rect):
                 game = False
+        for enemy in enemys:
+            enemy.update()
+            if pers.rect.colliderect(enemy.rect):
+                game = False
+
+
 
 
         
